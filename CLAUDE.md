@@ -60,6 +60,7 @@ Sync between machines via **Git + GitHub**.
 - Xcode 16+ (Mac App Store)
 - Git (via `xcode-select --install`)
 - VS Code (optional)
+- Claude Code CLI: `npm install -g @anthropic-ai/claude-code`
 
 ---
 
@@ -247,18 +248,18 @@ App restores last working session on relaunch.
 
 ## Implementation Order
 
-| Phase | Work | Machine |
-|-------|------|---------|
-| 1 | Python backend: FastAPI setup + `/generate-ingredients` + Claude prompt | Windows |
-| 2 | Backend: Pydantic models + error handling + local test via Postman | Windows |
-| 3 | iOS: Xcode project setup + navigation structure + placeholder screens | Mac |
-| 4 | iOS: Models + Mock service + basic checklist render | Mac |
-| 5 | iOS: Normalizer + Merger + unit tests | Mac |
-| 6 | iOS: Checklist UX (toggle, edit sheet, delete, grouped sections) | Mac |
-| 7 | iOS: Persistence (SwiftData + AppStorage) | Mac |
-| 8 | iOS: Live API networking + mock/live switch | Mac |
-| 9 | iOS: Shopping list screen + share/copy | Mac |
-| 10 | iOS + Backend: Polish, edge cases, README | Both |
+| Phase | Work | Machine | Status |
+|-------|------|---------|--------|
+| 1 | Python backend: FastAPI setup + `/generate-ingredients` + Claude prompt | Windows | ✅ Done |
+| 2 | Backend: Pydantic models + error handling + local test via Postman | Windows | ✅ Done |
+| 3 | iOS: Xcode project setup + navigation structure + placeholder screens | Mac | ⬜ Next |
+| 4 | iOS: Models + Mock service + basic checklist render | Mac | ⬜ |
+| 5 | iOS: Normalizer + Merger + unit tests | Mac | ⬜ |
+| 6 | iOS: Checklist UX (toggle, edit sheet, delete, grouped sections) | Mac | ⬜ |
+| 7 | iOS: Persistence (SwiftData + AppStorage) | Mac | ⬜ |
+| 8 | iOS: Live API networking + mock/live switch | Mac | ⬜ |
+| 9 | iOS: Shopping list screen + share/copy | Mac | ⬜ |
+| 10 | iOS + Backend: Polish, edge cases, README | Both | ⬜ |
 
 ---
 
@@ -285,6 +286,40 @@ Planned approach:
 - Use AWS Secrets Manager for `ANTHROPIC_API_KEY`
 - iOS app base URL switches from `localhost` to deployed domain
 - Consider API Gateway if using Lambda
+
+---
+
+## Mac 上手指南（切换到 Mac 后从这里开始）
+
+### 当前进度
+Phase 1 & 2 已在 Windows 上完成：
+- 后端代码在 `backend/` 目录，FastAPI + Claude Haiku，完整可运行
+- GitHub 仓库：`https://github.com/ErikZhang123/pantry-prep`
+- 后端 API 已测试通过，`POST /generate-ingredients` 返回正确 JSON
+
+### Mac 第一步：拉取代码
+```bash
+git clone https://github.com/ErikZhang123/pantry-prep.git
+cd pantry-prep
+```
+
+### Mac 第二步：开始 Phase 3
+**目标：** 在 Xcode 创建 iOS 项目，搭建导航结构和占位屏幕。
+
+具体任务：
+1. 打开 Xcode → New Project → App，命名 `PantryPrep`，Bundle ID 自定，Language: Swift，Interface: SwiftUI，勾选 SwiftData
+2. 删除默认的 `ContentView.swift`，按 iOS 架构章节的目录结构创建文件夹和占位文件
+3. 实现 `TabView` 或 `NavigationStack` 串联 HomeView / IngredientChecklistView / ShoppingListView / SettingsView（占位即可，有文字能跳转就行）
+4. 创建 `AppConfig.swift`，包含 `baseURL` 和 `useMock: Bool = true`
+5. 确认 Preview 能跑通
+
+### 后端本地启动方式（Mac 上测试联调时用）
+```bash
+cd pantry-prep/backend
+python -m uv sync
+echo "ANTHROPIC_API_KEY=你的密钥" > .env
+python -m uv run uvicorn main:app --reload --port 8000
+```
 
 ---
 
