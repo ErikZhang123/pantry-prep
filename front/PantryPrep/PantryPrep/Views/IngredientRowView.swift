@@ -2,18 +2,39 @@ import SwiftUI
 
 struct IngredientRowView: View {
     let ingredient: MergedIngredient
+    let onToggleOwned: () -> Void
+    let onEdit: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(ingredient.displayName)
-                    .font(.body)
-                secondaryLine
+            Button(action: onToggleOwned) {
+                Image(systemName: ingredient.owned ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(ingredient.owned ? Color.green : Color.secondary)
+                    .frame(width: 28, height: 28)
+                    .contentShape(Rectangle())
             }
-            Spacer()
-            badges
+            .buttonStyle(.borderless)
+            .accessibilityLabel(ingredient.owned ? "Mark as not owned" : "Mark as owned")
+
+            Button(action: onEdit) {
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(ingredient.displayName)
+                            .font(.body)
+                            .strikethrough(ingredient.owned)
+                            .foregroundStyle(ingredient.owned ? Color.secondary : Color.primary)
+                        secondaryLine
+                    }
+                    Spacer()
+                    badges
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
         .padding(.vertical, 2)
+        .opacity(ingredient.owned ? 0.6 : 1.0)
     }
 
     @ViewBuilder
@@ -69,23 +90,35 @@ struct IngredientRowView: View {
 
 #Preview {
     List {
-        IngredientRowView(ingredient: MergedIngredient(
-            id: UUID(), displayName: "Eggs", canonicalName: "egg",
-            totalQuantity: 6, unit: "pcs", category: .protein,
-            optional: false, pantryStaple: false, owned: false,
-            sources: [], needsReview: false
-        ))
-        IngredientRowView(ingredient: MergedIngredient(
-            id: UUID(), displayName: "Green Onion", canonicalName: "green onion",
-            totalQuantity: nil, unit: nil, category: .vegetable,
-            optional: false, pantryStaple: false, owned: false,
-            sources: [], needsReview: true
-        ))
-        IngredientRowView(ingredient: MergedIngredient(
-            id: UUID(), displayName: "Sesame Oil", canonicalName: "sesame oil",
-            totalQuantity: 1, unit: "tsp", category: .condiment,
-            optional: true, pantryStaple: false, owned: false,
-            sources: [], needsReview: false
-        ))
+        IngredientRowView(
+            ingredient: MergedIngredient(
+                id: UUID(), displayName: "Eggs", canonicalName: "egg",
+                totalQuantity: 6, unit: "pcs", category: .protein,
+                optional: false, pantryStaple: false, owned: false,
+                sources: [], needsReview: false
+            ),
+            onToggleOwned: {},
+            onEdit: {}
+        )
+        IngredientRowView(
+            ingredient: MergedIngredient(
+                id: UUID(), displayName: "Green Onion", canonicalName: "green onion",
+                totalQuantity: nil, unit: nil, category: .vegetable,
+                optional: false, pantryStaple: false, owned: false,
+                sources: [], needsReview: true
+            ),
+            onToggleOwned: {},
+            onEdit: {}
+        )
+        IngredientRowView(
+            ingredient: MergedIngredient(
+                id: UUID(), displayName: "Salt", canonicalName: "salt",
+                totalQuantity: nil, unit: "pinch", category: .spice,
+                optional: false, pantryStaple: true, owned: true,
+                sources: [], needsReview: false
+            ),
+            onToggleOwned: {},
+            onEdit: {}
+        )
     }
 }
