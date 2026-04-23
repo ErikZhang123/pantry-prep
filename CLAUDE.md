@@ -107,7 +107,7 @@ POST /generate-ingredients
 - Return clean JSON to the iOS app
 - Handle Claude API errors gracefully
 
-### Backend project structure (planned)
+### Backend project structure
 ```
 backend/
 ├── main.py               # FastAPI app entry point
@@ -121,8 +121,7 @@ backend/
 │   └── ingredient_prompt.py  # Prompt templates
 ├── .env                  # ANTHROPIC_API_KEY (never commit)
 ├── .env.example          # Safe to commit
-├── requirements.txt      # or pyproject.toml
-└── README.md
+└── pyproject.toml        # Dependencies managed by uv
 ```
 
 ---
@@ -315,10 +314,13 @@ cd pantry-prep
 
 ### 后端本地启动方式（Mac 上测试联调时用）
 ```bash
+# 如果 uv 未安装，先运行：
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
 cd pantry-prep/backend
-python -m uv sync
+uv sync
 echo "ANTHROPIC_API_KEY=你的密钥" > .env
-python -m uv run uvicorn main:app --reload --port 8000
+uv run uvicorn main:app --reload --port 8000
 ```
 
 ---
